@@ -18,6 +18,16 @@ BLUE='\033[0;94m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+## Message Codes
+FAIL="${RED}✗${NC}"
+WARN="${PURPLE}!${NC}"
+GOOD="${GREEN}✓${NC}"
+STAT="${CYAN}∞${NC}"
+INFO="${YELLOW}»${NC}"
+INF1="${CYAN}›${NC}"
+NEED="${BLUE}?${NC}"
+LOGO="${PURPLE}∞${NC}"
+
 # Variables
 CROSSCOUNT="0"
 PHFAILCOUNT="0"
@@ -44,116 +54,116 @@ echo -e ""
 echo -e "${YELLOW}Gravity Sync by ${BLUE}@vmstan${NC}"
 echo -e "${CYAN}https://github.com/vmstan/gravity-sync${NC}"
 echo -e "========================================================"
-echo -e "[${GREEN}✓${NC}] Checking Short Range Sensors"
+echo -e "${GOOD} Checking Short Range Sensors"
 
 # Check Root
-echo -e "[${YELLOW}i${NC}] ${YELLOW}Validating System Authorization${NC}"
+echo -e "${INFO} ${YELLOW}Validating System Authorization${NC}"
 if [ ! "$EUID" -ne 0 ]
 then
-    echo -e "[${GREEN}✓${NC}] Current User (${CURRENTUSER}) is ROOT"
+    echo -e "${GOOD} Current User (${CURRENTUSER}) is ROOT"
     LOCALADMIN="root"
 else
     if hash sudo 2>/dev/null
     then
-        echo -e "[${GREEN}✓${NC}] Sudo Utility Detected"
+        echo -e "${GOOD} Sudo Utility Detected"
         # Check Sudo
         sudo --validate
         if [ "$?" != "0" ]
         then
-            echo -e "[${RED}✗${NC}] Current User (${CURRENTUSER}) Cannot SUDO"
+            echo -e "${FAIL} Current User (${CURRENTUSER}) Cannot SUDO"
             CROSSCOUNT=$((CROSSCOUNT+1))
             LOCALADMIN="nosudo"
         else
-            echo -e "[${GREEN}✓${NC}] Current User (${CURRENTUSER}) Has SUDO Powers"
+            echo -e "${GOOD} Current User (${CURRENTUSER}) Has SUDO Powers"
             LOCALADMIN="sudo"
         fi
     else
-        echo -e "[${RED}✗${NC}] Sudo Utility Not Detected"
+        echo -e "${FAIL} Sudo Utility Not Detected"
         CROSSCOUNT=$((CROSSCOUNT+1))
         LOCALADMIN="nosudo"
     fi
     
     if [ "$LOCALADMIN" != "sudo" ]
     then
-        echo -e "[${RED}✗${NC}] Current User (${CURRENTUSER}) Cannot SUDO"
+        echo -e "${FAIL} Current User (${CURRENTUSER}) Cannot SUDO"
         CROSSCOUNT=$((CROSSCOUNT+1))
         LOCALADMIN="nosudo"
     fi
 fi
 
-echo -e "[${YELLOW}i${NC}] ${YELLOW}Scanning for Required Components${NC}"
+echo -e "${INFO} ${YELLOW}Scanning for Required Components${NC}"
 # Check OpenSSH
 if hash ssh 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] OpenSSH Binaries Detected"
+    echo -e "${GOOD} OpenSSH Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] OpenSSH Binaries Not Installed"
+    echo -e "${FAIL} OpenSSH Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check Rsync
 if hash rsync 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] RSYNC Binaries Detected"
+    echo -e "${GOOD} RSYNC Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] RSYNC Binaries Not Installed"
+    echo -e "${FAIL} RSYNC Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check Sudo
 if hash sudo 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] SUDO Binaries Detected"
+    echo -e "${GOOD} SUDO Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] SUDO Binaries Not Installed"
+    echo -e "${FAIL} SUDO Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check Crontab
 if hash crontab 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] CRONTAB Binaries Detected"
+    echo -e "${GOOD} CRONTAB Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] CRONTAB Binaries Not Installed"
+    echo -e "${FAIL} CRONTAB Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check SQLITE3
 if hash sqlite3 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] SQLITE3 Binaries Detected"
+    echo -e "${GOOD} SQLITE3 Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] SQLITE3 Binaries Not Installed"
+    echo -e "${FAIL} SQLITE3 Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check GIT
 if hash git 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] GIT Binaries Detected"
+    echo -e "${GOOD} GIT Binaries Detected"
 else
-    echo -e "[${RED}✗${NC}] GIT Binaries Not Installed"
+    echo -e "${FAIL} GIT Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-echo -e "[${YELLOW}i${NC}] ${YELLOW}Performing Warp Core Diagnostics${NC}"
+echo -e "${INFO} ${YELLOW}Performing Warp Core Diagnostics${NC}"
 # Check Pihole
 if hash pihole 2>/dev/null
 then
-    echo -e "[${GREEN}✓${NC}] Local Pi-hole Install Detected"
+    echo -e "${GOOD} Local Pi-hole Install Detected"
 else
-    echo -e "[${PURPLE}!${NC}] ${PURPLE}No Local Pi-hole Install Detected${NC}"
-    # echo -e "[${PURPLE}!${NC}] ${PURPLE}Attempting To Compensate${NC}"
+    echo -e "${WARN} ${PURPLE}No Local Pi-hole Install Detected${NC}"
+    # echo -e "${WARN} ${PURPLE}Attempting To Compensate${NC}"
     if hash docker 2>/dev/null
     then
-        echo -e "[${GREEN}✓${NC}] Docker Binaries Detected"
+        echo -e "${GOOD} Docker Binaries Detected"
         
         if [ "$LOCALADMIN" == "sudo" ]
         then
             FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "[${PURPLE}!${NC}] ${PURPLE}No Docker Pi-hole Container Detected (unable to scan)${NC}"
+            echo -e "${WARN} ${PURPLE}No Docker Pi-hole Container Detected (unable to scan)${NC}"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -164,23 +174,23 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "[${GREEN}✓${NC}] Pi-Hole Docker Container Detected"
+                echo -e "${GOOD} Pi-Hole Docker Container Detected"
             else
-                echo -e "[${PURPLE}!${NC}] ${PURPLE}No Docker Pi-hole Container Detected${NC}"
+                echo -e "${WARN} ${PURPLE}No Docker Pi-hole Container Detected${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
         fi
     elif hash podman 2>/dev/null
     then
-        echo -e "[${GREEN}✓${NC}] Podman Binaries Detected"
+        echo -e "${GOOD} Podman Binaries Detected"
         
         if [ "$LOCALADMIN" == "sudo" ]
         then
             FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "[${PURPLE}!${NC}] ${PURPLE}No Podman Pi-hole Container Detected (unable to scan)${NC}"
+            echo -e "${WARN} ${PURPLE}No Podman Pi-hole Container Detected (unable to scan)${NC}"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -191,16 +201,16 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "[${GREEN}✓${NC}] Pi-Hole Podman Container Detected"
+                echo -e "${GOOD} Pi-Hole Podman Container Detected"
     else
-                echo -e "[${PURPLE}!${NC}] ${PURPLE}No Podman Pi-hole Container Detected${NC}"
+                echo -e "${WARN} ${PURPLE}No Podman Pi-hole Container Detected${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
         fi
     else
-        # echo -e "[${RED}✗${NC}] No Local Pi-hole Install Detected"
-        echo -e "[${PURPLE}!${NC}] ${PURPLE}No Docker Pi-hole Alternative Detected${NC}"
+        # echo -e "${FAIL} No Local Pi-hole Install Detected"
+        echo -e "${WARN} ${PURPLE}No Docker Pi-hole Alternative Detected${NC}"
         # CROSSCOUNT=$((CROSSCOUNT+1))
         PHFAILCOUNT=$((PHFAILCOUNT+1))
     fi
@@ -208,11 +218,11 @@ fi
 
 if [ "$PHFAILCOUNT" != "0" ]
 then
-    echo -e "[${RED}✗${NC}] No Usable Pi-hole Install Detected"
+    echo -e "${FAIL} No Usable Pi-hole Install Detected"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-# echo -e "[${YELLOW}i${NC}] ${YELLOW}Target Folder Analysis${NC}"
+# echo -e "${INFO} ${YELLOW}Target Folder Analysis${NC}"
 if [ "$GS_INSTALL" == "secondary" ]
 then
     if [ "$LOCALADMIN" == "sudo" ]
@@ -220,8 +230,8 @@ then
         THISDIR=$(pwd)
         if [ "$THISDIR" != "$HOME" ]
         then
-            echo -e "[${RED}✗${NC}] ${CURRENTUSER} Must Install to $HOME"
-            echo -e "[${PURPLE}!${NC}] ${PURPLE}Use 'root' Account to Install in $THISDIR${NC}"
+            echo -e "${FAIL} ${CURRENTUSER} Must Install to $HOME"
+            echo -e "${WARN} ${PURPLE}Use 'root' Account to Install in $THISDIR${NC}"
             CROSSCOUNT=$((CROSSCOUNT+1))
         fi
     fi
@@ -229,24 +239,24 @@ fi
 
 if [ -d gravity-sync ]
 then
-    echo -e "[${RED}✗${NC}] Folder gravity-sync Already Exists"
-    echo -e "[${PURPLE}!${NC}] ${PURPLE}Use './gravity-sync.sh update' to Update Instead${NC}"
+    echo -e "${FAIL} Folder gravity-sync Already Exists"
+    echo -e "${WARN} ${PURPLE}Use './gravity-sync.sh update' to Update Instead${NC}"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-echo -e "[${YELLOW}i${NC}] ${YELLOW}Status Report${NC}"
+echo -e "${INFO} ${YELLOW}Status Report${NC}"
 # Combine Outputs
 if [ "$CROSSCOUNT" != "0" ]
 then
-    echo -e "[${RED}*${NC}] ${RED}${CROSSCOUNT} Critical Issue(s) Detected${NC}"
-    echo -e "[${PURPLE}!${NC}] ${PURPLE}Please Correct Failures and Re-Execute${NC}"
-    echo -e "[${YELLOW}i${NC}] ${YELLOW}Installation Exiting (without changes)${NC}"
+    echo -e "${FAIL} ${RED}${CROSSCOUNT} Critical Issue(s) Detected${NC}"
+    echo -e "${WARN} ${PURPLE}Please Correct Failures and Re-Execute${NC}"
+    echo -e "${INFO} ${YELLOW}Installation Exiting (without changes)${NC}"
 else
-    echo -e "[${YELLOW}i${NC}] ${YELLOW}Executing Gravity Sync Deployment${NC}"
+    echo -e "${INFO} ${YELLOW}Executing Gravity Sync Deployment${NC}"
     
     if [ "$LOCALADMIN" == "sudo" ]
     then
-        echo -e "[${BLUE}>${NC}] Creating Sudoers.d File"
+        echo -e "${STAT} Creating Sudoers.d File"
         touch /tmp/gs-nopasswd.sudo
         echo -e "${CURRENTUSER} ALL=(ALL) NOPASSWD: ALL" > /tmp/gs-nopasswd.sudo
         sudo install -m 0440 /tmp/gs-nopasswd.sudo /etc/sudoers.d/gs-nopasswd
@@ -254,24 +264,24 @@ else
     
     if [ "$GS_INSTALL" != "secondary" ]
     then
-        echo -e "[${YELLOW}i${NC}] Gravity Sync Preperation Complete"
-        echo -e "[${YELLOW}i${NC}] Execute on Installer on Secondary"
-        echo -e "[${YELLOW}i${NC}] Check Documentation for Instructions"
-        echo -e "[${YELLOW}i${NC}] Installation Exiting (without changes)"
+        echo -e "${INFO} Gravity Sync Preperation Complete"
+        echo -e "${INFO} Execute on Installer on Secondary"
+        echo -e "${INFO} Check Documentation for Instructions"
+        echo -e "${INFO} Installation Exiting (without changes)"
     else
-        echo -e "[${BLUE}>${NC}] Creating Gravity Sync Directories"
+        echo -e "${STAT} Creating Gravity Sync Directories"
             if [ "$GS_DEV" != "" ]
             then
                 git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git
             else
                 git clone https://github.com/vmstan/gravity-sync.git
             fi
-        echo -e "[${BLUE}>${NC}] Starting Gravity Sync Configuration"
+        echo -e "${STAT} Starting Gravity Sync Configuration"
         echo -e "========================================================"
         ./gravity-sync/gravity-sync.sh configure <&1
-        # echo -e "[${YELLOW}i${NC}] This host is now prepared to configure Gravity Sync!"
-        # echo -e "[${YELLOW}i${NC}] Please run './gravity-sync configure' from $HOME/gravity-sync"
-        # echo -e "[${YELLOW}i${NC}] Visit https://github.com/vmstan/gravity-sync for more instructions."
+        # echo -e "${INFO} This host is now prepared to configure Gravity Sync!"
+        # echo -e "${INFO} Please run './gravity-sync configure' from $HOME/gravity-sync"
+        # echo -e "${INFO} Visit https://github.com/vmstan/gravity-sync for more instructions."
     fi
     
 fi
