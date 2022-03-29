@@ -34,23 +34,6 @@ PHFAILCOUNT="0"
 CURRENTUSER=$(whoami)
 
 # Header
-echo -e ""
-echo -e "         ..::-----::..                          ..::------::.         "
-echo -e "      .:----:::::::----:.                    .:::--:::::---===-:      "
-echo -e "    :---:.           .:---:                +##+:.          .:-===-.   "
-echo -e "  .---:.                :---:            -*##*:               .-===:  "
-echo -e " .---.                    :---:        -++*+.                   .==+- "
-echo -e " ---.          =            :---:    :====.           -          .=++."
-echo -e ":--:          -=-.            :---::---:.            -=-.         :++="
-echo -e "---.      .:-=====-:..          ------.          .:-=====-:..     .+++"
-echo -e "---.        .:===-.            :------:            .:===-.        :+++"
-echo -e ".--:          .=:            :---:  :---:             =:          -++-"
-echo -e " :--:          ..          .---:.     :--::           ..         -=+= "
-echo -e "  :--:                   .---:.         :-:::                   -===. "
-echo -e "   :---:               :---:              :::::              .:====   "
-echo -e "     :---::..     ..::---:.                 ::::::..     ..:-===-.    "
-echo -e "       .::-----------::.                      .::---------===-:       "
-echo -e ""
 echo -e "${YELLOW}Gravity Sync by ${BLUE}@vmstan${NC}"
 echo -e "${CYAN}https://github.com/vmstan/gravity-sync${NC}"
 echo -e "========================================================"
@@ -120,11 +103,11 @@ else
 fi
 
 # Check Crontab
-if hash crontab 2>/dev/null
+if hash systemctl 2>/dev/null
 then
-    echo -e "${GOOD} CRONTAB Binaries Detected"
+    echo -e "${GOOD} Systemctl Binaries Detected"
 else
-    echo -e "${FAIL} CRONTAB Binaries Not Installed"
+    echo -e "${FAIL} Systemctl Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
@@ -277,7 +260,7 @@ else
                 git clone https://github.com/vmstan/gravity-sync.git
             fi
         echo -e "${STAT} Starting Gravity Sync Configuration"
-        echo -e "========================================================"
+        # echo -e "========================================================"
         ./gravity-sync/gravity-sync.sh configure <&1
         # echo -e "${INFO} This host is now prepared to configure Gravity Sync!"
         # echo -e "${INFO} Please run './gravity-sync configure' from $HOME/gravity-sync"
