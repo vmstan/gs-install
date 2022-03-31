@@ -245,6 +245,7 @@ else
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
             sudo mkdir /etc/gravity-sync
+            sudo mkdir /etc/gravity-sync/.gs
             if [ "$GS_DEV" != "" ]
             then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
