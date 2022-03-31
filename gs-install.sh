@@ -245,14 +245,13 @@ else
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
             sudo mkdir /etc/gravity-sync
-            sudo mkdir /etc/gravity-sync/.gs
             if [ "$GS_DEV" != "" ]
             then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
-            sudo cp /etc/gravity-sync/.gs/gravity-sync
+            sudo cp /etc/gravity-sync/.gs/gravity-sync /usr/local/bin
         echo -e "${STAT} Starting Gravity Sync Configuration"
         # echo -e "========================================================"
         gravity-sync configure <&1
