@@ -102,21 +102,12 @@ else
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-# Check Crontab
+# Check for Systemctl
 if hash systemctl 2>/dev/null
 then
     echo -e "${GOOD} Systemctl Binaries Detected"
 else
     echo -e "${FAIL} Systemctl Binaries Not Installed"
-    CROSSCOUNT=$((CROSSCOUNT+1))
-fi
-
-# Check SQLITE3
-if hash sqlite3 2>/dev/null
-then
-    echo -e "${GOOD} SQLITE3 Binaries Detected"
-else
-    echo -e "${FAIL} SQLITE3 Binaries Not Installed"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
