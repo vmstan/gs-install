@@ -236,7 +236,7 @@ else
         sudo install -m 0440 /tmp/gs-nopasswd.sudo /etc/sudoers.d/gs-nopasswd
     fi
     
-    if [ "$GS_INSTALL" != "secondary" ]
+    if [ "$GS" != "engage" ]
     then
         echo -e "${INFO} Gravity Sync Preperation Complete"
         echo -e "${INFO} Execute on Installer on Secondary"
