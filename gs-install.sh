@@ -211,10 +211,10 @@ then
     fi
 fi
 
-if [ -d gravity-sync ]
+if [ -d /etc/gravity-sync/.gs ] || [ -d gravity-sync ] || [ -d $HOME/gravity-sync ]
 then
-    echo -e "${FAIL} Folder gravity-sync Already Exists"
-    echo -e "${WARN} ${PURPLE}Use './gravity-sync.sh update' to Update Instead${NC}"
+    echo -e "${FAIL} Existing Install Detected"
+    echo -e "${WARN} ${PURPLE}Use 'gravity-sync update' to Upgrade${NC}"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
@@ -244,15 +244,17 @@ else
         echo -e "${INFO} Installation Exiting (without changes)"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
+            sudo mkdir /etc/gravity-sync
             if [ "$GS_DEV" != "" ]
             then
-                git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git
+                sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             else
-                git clone https://github.com/vmstan/gravity-sync.git
+                sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
+            sudo cp /etc/gravity-sync/.gs/gravity-sync
         echo -e "${STAT} Starting Gravity Sync Configuration"
         # echo -e "========================================================"
-        ./gravity-sync/gravity-sync.sh configure <&1
+        gravity-sync configure <&1
         # echo -e "${INFO} This host is now prepared to configure Gravity Sync!"
         # echo -e "${INFO} Please run './gravity-sync configure' from $HOME/gravity-sync"
         # echo -e "${INFO} Visit https://github.com/vmstan/gravity-sync for more instructions."
