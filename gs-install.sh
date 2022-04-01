@@ -32,8 +32,8 @@ PHFAILCOUNT="0"
 CURRENTUSER=$(whoami)
 
 # Header
-echo -e "${LOGO} ${BOLD}Gravity Sync by ${BLUE}@vmstan${NC}${BOLD} - Installation Script${NC}"
-echo -e "${INFO} ${YELLOW}Validating user permissions${NC}"
+echo -e "${LOGO} ${BOLD}Gravity Sync by @vmstan - Installation Script${NC}"
+echo -e "${INFO} Validating user permissions"
 if [ ! "$EUID" -ne 0 ]; then
     echo -e "${GOOD} ${CURRENTUSER} is root"
     LOCALADMIN="root"
@@ -113,13 +113,13 @@ else
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-echo -e "${INFO} ${YELLOW}Performing Warp Core Diagnostics${NC}"
+echo -e "${INFO} Performing Warp Core Diagnostics"
 # Check Pihole
 if hash pihole 2>/dev/null
 then
     echo -e "${GOOD} Local installation of Pi-hole has been detected"
 else
-    echo -e "${WARN} ${PURPLE}Standard Pi-hole installation is not detected${NC}"
+    echo -e "${WARN} Standard Pi-hole installation is not detected"
     echo -e "${INF1} Attempting To Compensate"
     if hash docker 2>/dev/null
     then
@@ -130,7 +130,7 @@ else
             FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "${WARN} ${PURPLE}Unable to detect running Docker containers${NC}"
+            echo -e "${WARN} Unable to detect running Docker containers"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -143,7 +143,7 @@ else
             then
                 echo -e "${GOOD} Running Docker container of Pi-hole has been detected"
             else
-                echo -e "${WARN} ${PURPLE}There is no Docker container of Pi-hole running${NC}"
+                echo -e "${WARN} There is no Docker container of Pi-hole running"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
@@ -157,7 +157,7 @@ else
             FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "${WARN} ${PURPLE}Unable to detect running Podman containers${NC}"
+            echo -e "${WARN} Unable to detect running Podman containers"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -170,14 +170,14 @@ else
             then
                 echo -e "${GOOD} Running Podman container of Pi-hole has been detected"
     else
-                echo -e "${WARN} ${PURPLE}There is no Podman container of Pi-hole running${NC}"
+                echo -e "${WARN} There is no Podman container of Pi-hole running"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
         fi
     else
         # echo -e "${FAIL} No Local Pi-hole Install Detected"
-        echo -e "${WARN} ${PURPLE}No containerized Pi-hole alternatives are detected${NC}"
+        echo -e "${WARN} No containerized Pi-hole alternatives are detected"
         # CROSSCOUNT=$((CROSSCOUNT+1))
         PHFAILCOUNT=$((PHFAILCOUNT+1))
     fi
@@ -207,12 +207,12 @@ fi
 # Combine Outputs
 if [ "$CROSSCOUNT" != "0" ]
 then
-    echo -e "${INFO} ${YELLOW}Status Report${NC}"
+    echo -e "${INFO} Status Report"
     echo -e "${FAIL} ${RED}${CROSSCOUNT} critical issue(s) prevent successful deployment${NC}"
-    echo -e "${WARN} ${PURPLE}Please compensate for the failures and re-execute${NC}"
+    echo -e "${WARN} Please compensate for the failures and re-execute"
     echo -e "${INF1} Installation is now exiting making without changes"
 else
-    echo -e "${INFO} ${YELLOW}Executing Gravity Sync Deployment${NC}"
+    echo -e "${INFO} Executing Gravity Sync Deployment"
     
     if [ "$LOCALADMIN" == "sudo" ]
     then
@@ -256,8 +256,8 @@ else
             gravity-sync configure <&1
         else
             echo -e "${GOOD} Existing gravity-sync.conf has been detected"
-            echo -e "${INF1} Execute 'gravity-sync configure' to replace it"
-            echo -e "${INF1} Use 'gravity-sync update' in the future as an alternative"
+            echo -e "${WARN} Execute 'gravity-sync configure' to replace it"
+            echo -e "${WARN} Use 'gravity-sync update' in the future as an alternative"
             echo -e "${GOOD} Upgrade Complete"
             echo -e "${INFO} Installation Exiting"
         fi
