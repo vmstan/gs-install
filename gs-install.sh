@@ -241,7 +241,7 @@ else
             if [ -f /usr/local/bin/gravity-sync ]; then
                 sudo rm -f /usr/local/bin/gravity-sync
             fi
-
+            echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
             if [ "$GS_DEV" != "" ]; then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
                 touch /etc/gravity-sync/.gs/dev
@@ -250,6 +250,7 @@ else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
             sudo cp /etc/gravity-sync/.gs/gravity-sync /usr/local/bin
+            echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
         echo -e "${STAT} Starting Gravity Sync Configuration"
         
         if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
