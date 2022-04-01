@@ -62,7 +62,7 @@ else
      fi
 fi
 
-echo -e "${INFO} ${YELLOW}Scanning for Required Components${NC}"
+echo -e "${INFO} Scanning for Required Components"
 # Check OpenSSH
 if hash ssh 2>/dev/null
 then
