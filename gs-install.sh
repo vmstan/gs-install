@@ -257,6 +257,7 @@ else
         else
             echo -e "${GOOD} Existing gravity-sync.conf has been detected"
             echo -e "${INF1} Execute 'gravity-sync configure' to replace it"
+            echo -e "${INF1} Use 'gravity-sync update' in the future as an alternative"
             echo -e "${GOOD} Upgrade Complete"
             echo -e "${INFO} Installation Exiting"
     fi
