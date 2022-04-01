@@ -150,14 +150,14 @@ else
         fi
     elif hash podman 2>/dev/null
     then
-        echo -e "${GOOD} Podman Binaries Detected"
+        echo -e "${GOOD} Podman installation has been detected"
         
         if [ "$LOCALADMIN" == "sudo" ]
         then
             FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "${WARN} ${PURPLE}No Podman Pi-hole Container Detected (unable to scan)${NC}"
+            echo -e "${WARN} ${PURPLE}Unable to detect running Podman containers${NC}"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -168,16 +168,16 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "${GOOD} Pi-Hole Podman Container Detected"
+                echo -e "${GOOD} Podman installation has been detected"
     else
-                echo -e "${WARN} ${PURPLE}No Podman Pi-hole Container Detected${NC}"
+                echo -e "${WARN} ${PURPLE}There is no Podman container of Pi-hole running${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
         fi
     else
         # echo -e "${FAIL} No Local Pi-hole Install Detected"
-        echo -e "${WARN} ${PURPLE}No Docker Pi-hole Alternative Detected${NC}"
+        echo -e "${WARN} ${PURPLE}No containerized Pi-hole alternatives are detected${NC}"
         # CROSSCOUNT=$((CROSSCOUNT+1))
         PHFAILCOUNT=$((PHFAILCOUNT+1))
     fi
