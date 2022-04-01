@@ -225,9 +225,9 @@ else
     if [ "$GS" == "prep" ]
     then
         echo -e "${GOOD} This system has been validated as ready to run Gravity Sync"
-        echo -e "${INF1} Execute again here or on another system without 'GS=prep'"
+        echo -e "${WARN} Execute again here or on another system without 'GS=prep'"
         echo -e "${NEED} https://github.com/vmstan/gravity-sync/wiki for questions"
-        echo -e "${INFO} Installation Exiting"
+        echo -e "${INFO} Preperation Complete"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
             if [ -d /etc/gravity-sync/.gs ]; then
