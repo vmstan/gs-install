@@ -251,7 +251,14 @@ else
             fi
             sudo cp /etc/gravity-sync/.gs/gravity-sync /usr/local/bin
         echo -e "${STAT} Starting Gravity Sync Configuration"
-        gravity-sync configure <&1
+        
+        if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
+            gravity-sync configure <&1
+        else
+            echo -e "${GOOD} Existing gravity-sync.conf has been detected"
+            echo -e "${INF1} Execute 'gravity-sync configure' to replace it"
+            echo -e "${GOOD} Upgrade Complete"
+            echo -e "${INFO} Installation Exiting"
     fi
 fi
 exit
