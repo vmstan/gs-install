@@ -37,41 +37,33 @@ CURRENTUSER=$(whoami)
 echo -e "${YELLOW}Gravity Sync by ${BLUE}@vmstan${NC}"
 echo -e "${CYAN}https://github.com/vmstan/gravity-sync${NC}"
 echo -e "========================================================"
-echo -e "${GOOD} Checking Short Range Sensors"
-
-# Check Root
-echo -e "${INFO} ${YELLOW}Validating System Authorization${NC}"
-if [ ! "$EUID" -ne 0 ]
-then
-    echo -e "${GOOD} Current User (${CURRENTUSER}) is ROOT"
+echo -e "${INFO} ${YELLOW}Validating user permissions${NC}"
+if [ ! "$EUID" -ne 0 ]; then
+    echo -e "${GOOD} ${CURRENTUSER} is root"
     LOCALADMIN="root"
 else
-    if hash sudo 2>/dev/null
-    then
-        echo -e "${GOOD} Sudo Utility Detected"
-        # Check Sudo
+    if hash sudo 2>/dev/null; then
+        echo -e "${GOOD} Sudo utility detected"
         sudo --validate
-        if [ "$?" != "0" ]
-        then
-            echo -e "${FAIL} Current User (${CURRENTUSER}) Cannot SUDO"
+        if [ "$?" != "0" ]; then
+            echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
             CROSSCOUNT=$((CROSSCOUNT+1))
             LOCALADMIN="nosudo"
         else
-            echo -e "${GOOD} Current User (${CURRENTUSER}) Has SUDO Powers"
+            echo -e "${GOOD} ${CURRENTUSER} has sudo powers"
             LOCALADMIN="sudo"
         fi
     else
-        echo -e "${FAIL} Sudo Utility Not Detected"
+        echo -e "${FAIL} Sudo utility not detected"
         CROSSCOUNT=$((CROSSCOUNT+1))
         LOCALADMIN="nosudo"
     fi
     
-    if [ "$LOCALADMIN" != "sudo" ]
-    then
-        echo -e "${FAIL} Current User (${CURRENTUSER}) Cannot SUDO"
-        CROSSCOUNT=$((CROSSCOUNT+1))
-        LOCALADMIN="nosudo"
-    fi
+    # if [ "$LOCALADMIN" != "sudo" ]; then
+    #    echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
+    #    CROSSCOUNT=$((CROSSCOUNT+1))
+    #    LOCALADMIN="nosudo"
+    # fi
 fi
 
 echo -e "${INFO} ${YELLOW}Scanning for Required Components${NC}"
