@@ -211,13 +211,6 @@ fi
 #    fi
 # fi
 
-if [ -d /etc/gravity-sync/.gs ] || [ -d gravity-sync ] || [ -d $HOME/gravity-sync ]
-then
-    echo -e "${FAIL} Existing Install Detected"
-    echo -e "${WARN} ${PURPLE}Use 'gravity-sync update' to Upgrade${NC}"
-    CROSSCOUNT=$((CROSSCOUNT+1))
-fi
-
 # Combine Outputs
 if [ "$CROSSCOUNT" != "0" ]
 then
@@ -244,12 +237,22 @@ else
         echo -e "${INFO} Installation Exiting (without changes)"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
-            sudo mkdir /etc/gravity-sync
-            if [ "$GS_DEV" != "" ]
-            then
+            if [ -d /etc/gravity-sync/.gs ]; then
+                sudo rm -fr /etc/gravity-sync/.gs
+            fi
+
+            if [ ! -d /etc/gravity-sync ]; then
+                sudo mkdir /etc/gravity-sync
+            fi
+
+            if [ -f /usr/local/bin/gravity-sync ]; then
+                sudo rm -f /usr/local/bin/gravity-sync
+            fi
+
+            if [ "$GS_DEV" != "" ]; then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
                 touch /etc/gravity-sync/.gs/dev
-                echo -e "origin/$GS_DEV" >> ${GS_LOCAL_REPO}/dev
+                echo -e "origin/$GS_DEV" >> /etc/gravity-sync/.gs/dev
             else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
