@@ -32,7 +32,7 @@ PHFAILCOUNT="0"
 CURRENTUSER=$(whoami)
 
 # Header
-echo -e "${LOGO} ${BOLD}Gravity Sync by ${BLUE}@vmstan${NC}{BOLD} - Installation Script${NC}"
+echo -e "${LOGO} ${BOLD}Gravity Sync by ${BLUE}@vmstan${NC}${BOLD} - Installation Script${NC}"
 echo -e "${INFO} ${YELLOW}Validating user permissions${NC}"
 if [ ! "$EUID" -ne 0 ]; then
     echo -e "${GOOD} ${CURRENTUSER} is root"
