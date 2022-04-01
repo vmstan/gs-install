@@ -218,10 +218,10 @@ then
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-echo -e "${INFO} ${YELLOW}Status Report${NC}"
 # Combine Outputs
 if [ "$CROSSCOUNT" != "0" ]
 then
+    echo -e "${INFO} ${YELLOW}Status Report${NC}"
     echo -e "${FAIL} ${RED}${CROSSCOUNT} Critical Issue(s) Detected${NC}"
     echo -e "${WARN} ${PURPLE}Please Correct Failures and Re-Execute${NC}"
     echo -e "${INFO} ${YELLOW}Installation Exiting (without changes)${NC}"
@@ -248,6 +248,8 @@ else
             if [ "$GS_DEV" != "" ]
             then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
+                touch /etc/gravity-sync/.gs/dev
+                echo -e "origin/$GS_DEV" >> ${GS_LOCAL_REPO}/dev
             else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
