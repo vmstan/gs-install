@@ -197,19 +197,19 @@ then
 fi
 
 # echo -e "${INFO} ${YELLOW}Target Folder Analysis${NC}"
-if [ "$GS_INSTALL" == "secondary" ]
-then
-    if [ "$LOCALADMIN" == "sudo" ]
-    then
-        THISDIR=$(pwd)
-        if [ "$THISDIR" != "$HOME" ]
-        then
-            echo -e "${FAIL} ${CURRENTUSER} Must Install to $HOME"
-            echo -e "${WARN} ${PURPLE}Use 'root' Account to Install in $THISDIR${NC}"
-            CROSSCOUNT=$((CROSSCOUNT+1))
-        fi
-    fi
-fi
+# if [ "$GS_INSTALL" == "secondary" ]
+# then
+#    if [ "$LOCALADMIN" == "sudo" ]
+#    then
+#        THISDIR=$(pwd)
+#        if [ "$THISDIR" != "$HOME" ]
+#        then
+#            echo -e "${FAIL} ${CURRENTUSER} Must Install to $HOME"
+#            echo -e "${WARN} ${PURPLE}Use 'root' Account to Install in $THISDIR${NC}"
+#            CROSSCOUNT=$((CROSSCOUNT+1))
+#        fi
+#    fi
+# fi
 
 if [ -d /etc/gravity-sync/.gs ] || [ -d gravity-sync ] || [ -d $HOME/gravity-sync ]
 then
@@ -255,13 +255,7 @@ else
             fi
             sudo cp /etc/gravity-sync/.gs/gravity-sync /usr/local/bin
         echo -e "${STAT} Starting Gravity Sync Configuration"
-        # echo -e "========================================================"
         gravity-sync configure <&1
-        # echo -e "${INFO} This host is now prepared to configure Gravity Sync!"
-        # echo -e "${INFO} Please run './gravity-sync configure' from $HOME/gravity-sync"
-        # echo -e "${INFO} Visit https://github.com/vmstan/gravity-sync for more instructions."
     fi
-    
 fi
-
 exit
