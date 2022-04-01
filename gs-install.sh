@@ -4,8 +4,6 @@
 # For documentation or downloading updates visit https://github.com/vmstan/gravity-sync
 # This code will be called from a curl call via installation instructions
 
-# Run this script on your primary Pi-hole to aid in preparing for Gravity Sync installation.
-
 set -e
 
 # Script Colors
@@ -34,9 +32,7 @@ PHFAILCOUNT="0"
 CURRENTUSER=$(whoami)
 
 # Header
-echo -e "${YELLOW}Gravity Sync by ${BLUE}@vmstan${NC}"
-echo -e "${CYAN}https://github.com/vmstan/gravity-sync${NC}"
-echo -e "========================================================"
+echo -e "${LOGO} Gravity Sync by ${BLUE}@vmstan${NC}"
 echo -e "${INFO} ${YELLOW}Validating user permissions${NC}"
 if [ ! "$EUID" -ne 0 ]; then
     echo -e "${GOOD} ${CURRENTUSER} is root"
@@ -70,45 +66,50 @@ echo -e "${INFO} ${YELLOW}Scanning for Required Components${NC}"
 # Check OpenSSH
 if hash ssh 2>/dev/null
 then
-    echo -e "${GOOD} OpenSSH Binaries Detected"
+    echo -e "${GOOD} SSH has been detected"
 else
-    echo -e "${FAIL} OpenSSH Binaries Not Installed"
+    echo -e "${FAIL} OpenSSH not detected on this system"
+    echo -e "${WARN} This is required to run commands to your remote Pi-hole"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check Rsync
 if hash rsync 2>/dev/null
 then
-    echo -e "${GOOD} RSYNC Binaries Detected"
+    echo -e "${GOOD} RSYNC has been detected"
 else
-    echo -e "${FAIL} RSYNC Binaries Not Installed"
+    echo -e "${FAIL} RSYNC not detected on this system"
+    echo -e "${WARN} This is required to transfer data to/from your remote Pi-hole"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check Sudo
 if hash sudo 2>/dev/null
 then
-    echo -e "${GOOD} SUDO Binaries Detected"
+    echo -e "${GOOD} SUDO has been detected"
 else
-    echo -e "${FAIL} SUDO Binaries Not Installed"
+    echo -e "${FAIL} SUDO not detected on this system"
+    echo -e "${WARN} This is required to properly set permissions on your Pi-hole(s)"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check for Systemctl
 if hash systemctl 2>/dev/null
 then
-    echo -e "${GOOD} Systemctl Binaries Detected"
+    echo -e "${GOOD} Systemctl has been detected"
 else
-    echo -e "${FAIL} Systemctl Binaries Not Installed"
+    echo -e "${FAIL} Systemctl not detected on this system"
+    echo -e "${WARN} This is required to automate and monitor Pi-hole replication"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 # Check GIT
 if hash git 2>/dev/null
 then
-    echo -e "${GOOD} GIT Binaries Detected"
+    echo -e "${GOOD} GIT has been detected"
 else
-    echo -e "${FAIL} GIT Binaries Not Installed"
+    echo -e "${FAIL} GIT has not been detected"
+    echo -e "${WARN} This is required to download and update Gravity Sync"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
@@ -116,20 +117,20 @@ echo -e "${INFO} ${YELLOW}Performing Warp Core Diagnostics${NC}"
 # Check Pihole
 if hash pihole 2>/dev/null
 then
-    echo -e "${GOOD} Local Pi-hole Install Detected"
+    echo -e "${GOOD} Local installation of Pi-hole has been detected"
 else
-    echo -e "${WARN} ${PURPLE}No Local Pi-hole Install Detected${NC}"
-    # echo -e "${WARN} ${PURPLE}Attempting To Compensate${NC}"
+    echo -e "${WARN} ${PURPLE}Standard Pi-hole installation is not detected${NC}"
+    echo -e "${INF1} Attempting To Compensate"
     if hash docker 2>/dev/null
     then
-        echo -e "${GOOD} Docker Binaries Detected"
+        echo -e "${GOOD} Docker installation has been detected"
         
         if [ "$LOCALADMIN" == "sudo" ]
         then
             FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
         elif [ "$LOCALADMIN" == "nosudo" ]
         then
-            echo -e "${WARN} ${PURPLE}No Docker Pi-hole Container Detected (unable to scan)${NC}"
+            echo -e "${WARN} ${PURPLE}Unable to detect running Docker containers${NC}"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
         else
@@ -140,9 +141,9 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "${GOOD} Pi-Hole Docker Container Detected"
+                echo -e "${GOOD} Docker installation has been detected"
             else
-                echo -e "${WARN} ${PURPLE}No Docker Pi-hole Container Detected${NC}"
+                echo -e "${WARN} ${PURPLE}There is no Docker container of Pi-hole running${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
             fi
@@ -184,7 +185,7 @@ fi
 
 if [ "$PHFAILCOUNT" != "0" ]
 then
-    echo -e "${FAIL} No Usable Pi-hole Install Detected"
+    echo -e "${FAIL} Pi-hole was not found on this system"
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
@@ -207,26 +208,26 @@ fi
 if [ "$CROSSCOUNT" != "0" ]
 then
     echo -e "${INFO} ${YELLOW}Status Report${NC}"
-    echo -e "${FAIL} ${RED}${CROSSCOUNT} Critical Issue(s) Detected${NC}"
-    echo -e "${WARN} ${PURPLE}Please Correct Failures and Re-Execute${NC}"
-    echo -e "${INFO} ${YELLOW}Installation Exiting (without changes)${NC}"
+    echo -e "${FAIL} ${RED}${CROSSCOUNT} critical issue(s) has been detected${NC}"
+    echo -e "${WARN} ${PURPLE}Please compensate for the failures and re-execute${NC}"
+    echo -e "${INF1} ${YELLOW}Installation is now exiting making without changes${NC}"
 else
     echo -e "${INFO} ${YELLOW}Executing Gravity Sync Deployment${NC}"
     
     if [ "$LOCALADMIN" == "sudo" ]
     then
-        echo -e "${STAT} Creating Sudoers.d File"
+        echo -e "${STAT} Creating sudoers.d permissions file"
         touch /tmp/gs-nopasswd.sudo
         echo -e "${CURRENTUSER} ALL=(ALL) NOPASSWD: ALL" > /tmp/gs-nopasswd.sudo
         sudo install -m 0440 /tmp/gs-nopasswd.sudo /etc/sudoers.d/gs-nopasswd
     fi
     
-    if [ "$GS" != "engage" ]
+    if [ "$GS" == "prep" ]
     then
-        echo -e "${INFO} Gravity Sync Preperation Complete"
-        echo -e "${INFO} Execute on Installer on Secondary"
-        echo -e "${INFO} Check Documentation for Instructions"
-        echo -e "${INFO} Installation Exiting (without changes)"
+        echo -e "${GOOD} This system has been validated as ready to run Gravity Sync"
+        echo -e "${INF1} Execute again here or on another system without 'GS=prep'"
+        echo -e "${NEED} https://github.com/vmstan/gravity-sync/wiki for questions"
+        echo -e "${INFO} Installation Exiting"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
             if [ -d /etc/gravity-sync/.gs ]; then
