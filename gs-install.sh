@@ -244,8 +244,8 @@ else
             echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
             if [ "$GS_DEV" != "" ]; then
                 sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
-                touch /etc/gravity-sync/.gs/dev
-                echo -e "BRANCH='origin/$GS_DEV'" >> /etc/gravity-sync/.gs/dev
+                sudo touch /etc/gravity-sync/.gs/dev
+                sudo echo -e "BRANCH='origin/$GS_DEV'" >> /etc/gravity-sync/.gs/dev
             else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
