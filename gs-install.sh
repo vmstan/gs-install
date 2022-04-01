@@ -141,7 +141,7 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "${GOOD} Docker installation has been detected"
+                echo -e "${GOOD} Running Docker container of Pi-hole has been detected"
             else
                 echo -e "${WARN} ${PURPLE}There is no Docker container of Pi-hole running${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
@@ -168,7 +168,7 @@ else
         then
             if [ "$FTLCHECK" != "" ]
             then
-                echo -e "${GOOD} Podman installation has been detected"
+                echo -e "${GOOD} Running Podman container of Pi-hole has been detected"
     else
                 echo -e "${WARN} ${PURPLE}There is no Podman container of Pi-hole running${NC}"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
