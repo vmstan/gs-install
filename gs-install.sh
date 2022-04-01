@@ -260,6 +260,7 @@ else
             echo -e "${INF1} Use 'gravity-sync update' in the future as an alternative"
             echo -e "${GOOD} Upgrade Complete"
             echo -e "${INFO} Installation Exiting"
+        fi
     fi
 fi
 exit
