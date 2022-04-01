@@ -55,11 +55,11 @@ else
         LOCALADMIN="nosudo"
     fi
     
-    # if [ "$LOCALADMIN" != "sudo" ]; then
-    #    echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
-    #    CROSSCOUNT=$((CROSSCOUNT+1))
-    #    LOCALADMIN="nosudo"
-    # fi
+    if [ "$LOCALADMIN" != "sudo" ]; then
+        echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
+        CROSSCOUNT=$((CROSSCOUNT+1))
+        LOCALADMIN="nosudo"
+     fi
 fi
 
 echo -e "${INFO} ${YELLOW}Scanning for Required Components${NC}"
@@ -208,9 +208,9 @@ fi
 if [ "$CROSSCOUNT" != "0" ]
 then
     echo -e "${INFO} ${YELLOW}Status Report${NC}"
-    echo -e "${FAIL} ${RED}${CROSSCOUNT} critical issue(s) has been detected${NC}"
+    echo -e "${FAIL} ${RED}${CROSSCOUNT} critical issue(s) prevent successful deployment${NC}"
     echo -e "${WARN} ${PURPLE}Please compensate for the failures and re-execute${NC}"
-    echo -e "${INF1} ${YELLOW}Installation is now exiting making without changes${NC}"
+    echo -e "${INF1} Installation is now exiting making without changes"
 else
     echo -e "${INFO} ${YELLOW}Executing Gravity Sync Deployment${NC}"
     
