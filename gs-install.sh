@@ -236,6 +236,7 @@ else
 
             if [ ! -d /etc/gravity-sync ]; then
                 sudo mkdir /etc/gravity-sync
+                sudo chmod 775 /etc/gravity-sync
             fi
 
             if [ -f /usr/local/bin/gravity-sync ]; then
