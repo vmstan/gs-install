@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # GRAVITY SYNC BY VMSTAN #####################
 # gs-install.sh ##############################
 
@@ -251,9 +253,15 @@ else
                 sudo git clone https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
             fi
             sudo cp /etc/gravity-sync/.gs/gravity-sync /usr/local/bin
+            
+        if [ "$GS_DOCKER" == "1" ]; then
+            exit
+        fi    
+            
+            
             echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
-        echo -e "${STAT} Starting Gravity Sync Configuration"
-        
+            echo -e "${STAT} Starting Gravity Sync Configuration"
+
         if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
             gravity-sync configure <&1
         else
