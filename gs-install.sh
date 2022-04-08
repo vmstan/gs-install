@@ -42,8 +42,7 @@ if [ ! "$EUID" -ne 0 ]; then
 else
     if hash sudo 2>/dev/null; then
         echo -e "${GOOD} Sudo utility detected"
-        sudo --validate
-        if [ "$?" != "0" ]; then
+        if ! sudo --validate; then
             echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
             CROSSCOUNT=$((CROSSCOUNT+1))
             LOCALADMIN="nosudo"
@@ -95,14 +94,16 @@ else
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-# Check for Systemctl
-if hash systemctl 2>/dev/null
-then
-    echo -e "${GOOD} Systemctl has been detected"
-else
-    echo -e "${FAIL} Systemctl not detected on this system"
-    echo -e "${WARN} This is required to automate and monitor Pi-hole replication"
-    CROSSCOUNT=$((CROSSCOUNT+1))
+if [ "$GS_DOCKER" != "1" ]; then
+    # Check for Systemctl
+    if hash systemctl 2>/dev/null
+    then
+        echo -e "${GOOD} Systemctl has been detected"
+    else
+        echo -e "${FAIL} Systemctl not detected on this system"
+        echo -e "${WARN} This is required to automate and monitor Pi-hole replication"
+        CROSSCOUNT=$((CROSSCOUNT+1))
+    fi
 fi
 
 # Check GIT
@@ -115,96 +116,84 @@ else
     CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
-echo -e "${INFO} Performing Warp Core Diagnostics"
-# Check Pihole
-if hash pihole 2>/dev/null
-then
-    echo -e "${GOOD} Local installation of Pi-hole has been detected"
-else
-    echo -e "${WARN} Standard Pi-hole installation is not detected"
-    echo -e "${INF1} Attempting To Compensate"
-    if hash docker 2>/dev/null
+if [ "$GS_DOCKER" != "1" ]; then
+    echo -e "${INFO} Performing Warp Core Diagnostics"
+    # Check Pihole
+    if hash pihole 2>/dev/null
     then
-        echo -e "${GOOD} Docker installation has been detected"
-        
-        if [ "$LOCALADMIN" == "sudo" ]
+        echo -e "${GOOD} Local installation of Pi-hole has been detected"
+    else
+        echo -e "${WARN} Standard Pi-hole installation is not detected"
+        echo -e "${INF1} Attempting To Compensate"
+        if hash docker 2>/dev/null
         then
-            FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
-        elif [ "$LOCALADMIN" == "nosudo" ]
-        then
-            echo -e "${WARN} Unable to detect running Docker containers"
-            # CROSSCOUNT=$((CROSSCOUNT+1))
-            PHFAILCOUNT=$((PHFAILCOUNT+1))
-        else
-            FTLCHECK=$(docker container ls | grep 'pihole/pihole')
-        fi
-        
-        if [ "$LOCALADMIN" != "nosudo" ]
-        then
-            if [ "$FTLCHECK" != "" ]
+            echo -e "${GOOD} Docker installation has been detected"
+            
+            if [ "$LOCALADMIN" == "sudo" ]
             then
-                echo -e "${GOOD} Running Docker container of Pi-hole has been detected"
+                FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
+            elif [ "$LOCALADMIN" == "nosudo" ]
+            then
+                echo -e "${WARN} Unable to detect running Docker containers"
+                # CROSSCOUNT=$((CROSSCOUNT+1))
+                PHFAILCOUNT=$((PHFAILCOUNT+1))
             else
-                echo -e "${WARN} There is no Docker container of Pi-hole running"
+                FTLCHECK=$(docker container ls | grep 'pihole/pihole')
+            fi
+            
+            if [ "$LOCALADMIN" != "nosudo" ]
+            then
+                if [ "$FTLCHECK" != "" ]
+                then
+                    echo -e "${GOOD} Running Docker container of Pi-hole has been detected"
+                else
+                    echo -e "${WARN} There is no Docker container of Pi-hole running"
+                    # CROSSCOUNT=$((CROSSCOUNT+1))
+                    PHFAILCOUNT=$((PHFAILCOUNT+1))
+                fi
+            fi
+        elif hash podman 2>/dev/null
+        then
+            echo -e "${GOOD} Podman installation has been detected"
+            
+            if [ "$LOCALADMIN" == "sudo" ]
+            then
+                FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
+            elif [ "$LOCALADMIN" == "nosudo" ]
+            then
+                echo -e "${WARN} Unable to detect running Podman containers"
                 # CROSSCOUNT=$((CROSSCOUNT+1))
                 PHFAILCOUNT=$((PHFAILCOUNT+1))
+            else
+                FTLCHECK=$(podman container ls | grep 'pihole/pihole')
             fi
-        fi
-    elif hash podman 2>/dev/null
-    then
-        echo -e "${GOOD} Podman installation has been detected"
-        
-        if [ "$LOCALADMIN" == "sudo" ]
-        then
-            FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
-        elif [ "$LOCALADMIN" == "nosudo" ]
-        then
-            echo -e "${WARN} Unable to detect running Podman containers"
+            
+            if [ "$LOCALADMIN" != "nosudo" ]
+            then
+                if [ "$FTLCHECK" != "" ]
+                then
+                    echo -e "${GOOD} Running Podman container of Pi-hole has been detected"
+        else
+                    echo -e "${WARN} There is no Podman container of Pi-hole running"
+                    # CROSSCOUNT=$((CROSSCOUNT+1))
+                    PHFAILCOUNT=$((PHFAILCOUNT+1))
+                fi
+            fi
+        else
+            # echo -e "${FAIL} No Local Pi-hole Install Detected"
+            echo -e "${WARN} No containerized Pi-hole alternatives are detected"
             # CROSSCOUNT=$((CROSSCOUNT+1))
             PHFAILCOUNT=$((PHFAILCOUNT+1))
-        else
-            FTLCHECK=$(podman container ls | grep 'pihole/pihole')
         fi
-        
-        if [ "$LOCALADMIN" != "nosudo" ]
-        then
-            if [ "$FTLCHECK" != "" ]
-            then
-                echo -e "${GOOD} Running Podman container of Pi-hole has been detected"
-    else
-                echo -e "${WARN} There is no Podman container of Pi-hole running"
-                # CROSSCOUNT=$((CROSSCOUNT+1))
-                PHFAILCOUNT=$((PHFAILCOUNT+1))
-            fi
-        fi
-    else
-        # echo -e "${FAIL} No Local Pi-hole Install Detected"
-        echo -e "${WARN} No containerized Pi-hole alternatives are detected"
-        # CROSSCOUNT=$((CROSSCOUNT+1))
-        PHFAILCOUNT=$((PHFAILCOUNT+1))
+    fi
+
+
+    if [ "$PHFAILCOUNT" != "0" ]
+    then
+        echo -e "${FAIL} Pi-hole was not found on this system"
+        CROSSCOUNT=$((CROSSCOUNT+1))
     fi
 fi
-
-if [ "$PHFAILCOUNT" != "0" ]
-then
-    echo -e "${FAIL} Pi-hole was not found on this system"
-    CROSSCOUNT=$((CROSSCOUNT+1))
-fi
-
-# echo -e "${INFO} ${YELLOW}Target Folder Analysis${NC}"
-# if [ "$GS_INSTALL" == "secondary" ]
-# then
-#    if [ "$LOCALADMIN" == "sudo" ]
-#    then
-#        THISDIR=$(pwd)
-#        if [ "$THISDIR" != "$HOME" ]
-#        then
-#            echo -e "${FAIL} ${CURRENTUSER} Must Install to $HOME"
-#            echo -e "${WARN} ${PURPLE}Use 'root' Account to Install in $THISDIR${NC}"
-#            CROSSCOUNT=$((CROSSCOUNT+1))
-#        fi
-#    fi
-# fi
 
 # Combine Outputs
 if [ "$CROSSCOUNT" != "0" ]
@@ -244,9 +233,9 @@ else
             if [ -f /usr/local/bin/gravity-sync ]; then
                 sudo rm -f /usr/local/bin/gravity-sync
             fi
-            echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
+            
             if [ "$GS_DEV" != "" ]; then
-                sudo git clone -b ${GS_DEV} https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
+                sudo git clone -b "${GS_DEV}" https://github.com/vmstan/gravity-sync.git /etc/gravity-sync/.gs
                 sudo touch /etc/gravity-sync/.gs/dev
                 echo -e "BRANCH='origin/$GS_DEV'" | sudo tee /etc/gravity-sync/.gs/dev
             else
@@ -257,16 +246,13 @@ else
         if [ "$GS_DOCKER" == "1" ]; then
             exit
         fi    
-            
-            
-            echo -e "∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞∞"
             echo -e "${STAT} Starting Gravity Sync Configuration"
 
         if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
             gravity-sync configure <&1
         else
             echo -e "${GOOD} Existing gravity-sync.conf has been detected"
-            echo -e "${WARN} Execute 'gravity-sync configure' to replace it"
+            echo -e "${WARN} Execute 'gravity-sync config' to replace it"
             echo -e "${WARN} Use 'gravity-sync update' in the future as an alternative"
             echo -e "${GOOD} Upgrade Complete"
             echo -e "${INFO} Installation Exiting"
