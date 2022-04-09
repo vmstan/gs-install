@@ -106,7 +106,7 @@ fi
 
 if [ ! "${OS_PKG}" = "oldhat" ] || [ ! "${OS_PKG}" = "alpine" ]; then
     echo -e "${INFO} Attempting Install of Required Components"
-    sudo "${OS_INSTALL}" git rsync ssh
+    sudo ${OS_INSTALL} git rsync ssh
 fi
 
 echo -e "${INFO} Validating Install of Required Components"
