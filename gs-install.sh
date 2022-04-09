@@ -6,7 +6,7 @@
 # For documentation or downloading updates visit https://github.com/vmstan/gravity-sync
 # This code will be called from a curl call via installation instructions
 
-set -e
+# set -e
 export PATH+=':/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 if hash apt-get 2>/dev/null; then
