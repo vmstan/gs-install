@@ -212,7 +212,7 @@ else
          sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
     fi
 
-    echo -e "Get here?"
+   # echo -e "Get here?"
 
     GS_ALIAS_DETECT=$(alias | grep 'gravity-sync.sh')
     if [ "${GS_ALIAS_DETECT}" != "" ]; then
