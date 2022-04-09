@@ -9,24 +9,23 @@
 set -e
 export PATH+=':/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-if hash apt-get; then
+if hash apt-get 2>/dev/null; then
     OS_PKG="debian"
     OS_UPDATE="apt-get update"
     OS_INSTALL="apt-get install -y"
-elif hash dnf; then
+elif hash dnf 2>/dev/null; then
     OS_PKG="redhat"
     OS_UPDATE="dnf check-update"
     OS_INSTALL="dnf install"
-elif hash tdnf; then
+elif hash tdnf 2>/dev/null; then
     OS_PKG="photon"
     OS_INSTALL="tdnf update"
     OS_INSTALL="tdnf install"
-elif hash yum; then
+elif hash yum 2>/dev/null; then
     OS_PKG="oldhat"
-elif hash apk; then
+elif hash apk 2>/dev/null; then
     OS_PKG="alpine"
 fi
-
 
 # Script Colors
 RED='\033[0;91m'
@@ -111,8 +110,7 @@ fi
 
 echo -e "${INFO} Validating Install of Required Components"
 # Check OpenSSH
-if hash ssh 2>/dev/null
-then
+if hash ssh 2>/dev/null; then
     echo -e "${GOOD} SSH has been detected"
 else
     echo -e "${FAIL} SSH not detected on this system"
@@ -121,8 +119,7 @@ else
 fi
 
 # Check Rsync
-if hash rsync 2>/dev/null
-then
+if hash rsync 2>/dev/null; then
     echo -e "${GOOD} RSYNC has been detected"
 else
     echo -e "${FAIL} RSYNC not detected on this system"
@@ -143,8 +140,7 @@ if [ "$GS_DOCKER" != "1" ]; then
 fi
 
 # Check GIT
-if hash git 2>/dev/null
-then
+if hash git 2>/dev/null; then
     echo -e "${GOOD} GIT has been detected"
 else
     echo -e "${FAIL} GIT has not been detected"
@@ -158,8 +154,7 @@ if [ "$GS_DOCKER" != "1" ]; then
     if hash pihole 2>/dev/null; then
         echo -e "${GOOD} Local installation of Pi-hole has been detected"
     else
-        if hash docker 2>/dev/null
-        then
+        if hash docker 2>/dev/null; then
             echo -e "${GOOD} Docker installation has been detected"
             FTLCHECK=$(sudo docker container ls | grep 'pihole/pihole')
                 if [ "$FTLCHECK" != "" ]
@@ -194,17 +189,16 @@ if [ "$GS_DOCKER" != "1" ]; then
 fi
 
 # Combine Outputs
-if [ "$CROSSCOUNT" != "0" ]
-then
+if [ "$CROSSCOUNT" != "0" ]; then
     echo -e "${INFO} Status Report"
     echo -e "${FAIL} ${RED}${CROSSCOUNT} critical issue(s) prevent successful deployment${NC}"
     echo -e "  Please manually compensate for the failures and re-execute"
     echo -e "${INFO} Exiting Gravity Sync Installer"
+    exit
 else
     echo -e "${INFO} Executing Gravity Sync Deployment"
     
-    if [ "$LOCALADMIN" == "sudo" ]
-    then
+    if [ "$LOCALADMIN" == "sudo" ]; then
         echo -e "${STAT} Creating sudoers.d permissions file"
         touch /tmp/gs-nopasswd.sudo
         echo -e "${CURRENTUSER} ALL=(ALL) NOPASSWD: ALL" > /tmp/gs-nopasswd.sudo
@@ -215,7 +209,7 @@ else
         sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
     fi
 
-    GS_ALIAS_DETECT=$(alias | gravity-sync.sh)
+    GS_ALIAS_DETECT=$(alias | grep 'gravity-sync.sh')
     if [ "${GS_ALIAS_DETECT}" != "" ]; then
         echo -e "${WARN} Bash alias for a previous version of Gravity Sync was detected."
         echo -e "  You may need to manually remove this from your system and/or log out of"
@@ -223,12 +217,12 @@ else
         echo -e "  as expected."
     fi
     
-    if [ "$GS" == "prep" ]
-    then
+    if [ "$GS" == "prep" ]; then
         echo -e "${GOOD} This system has been validated as ready to run Gravity Sync"
         echo -e "  Execute again here or on another system without 'GS=prep'"
         echo -e "  https://github.com/vmstan/gravity-sync/wiki for questions"
         echo -e "${INFO} Gravity Sync Preperation Complete"
+        exit
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
             if [ -d /etc/gravity-sync/.gs ]; then
@@ -266,6 +260,7 @@ else
             echo -e "  Use ${YELLOW}gravity-sync update${NC} in the future as an alternative"
             echo -e "${GOOD} Upgrade Complete"
             echo -e "${INFO} Installation Exiting"
+            exit
         fi
     fi
 fi
