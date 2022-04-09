@@ -199,18 +199,18 @@ else
     echo -e "${INFO} Executing Gravity Sync Deployment"
     
     if [ "$LOCALADMIN" == "sudo" ]; then
-#        if [ ! -f /etc/sudoers.d/gs-nopasswd ]; then
+        if [ ! -f /etc/sudoers.d/gs-nopasswd ]; then
             echo -e "${STAT} Creating sudoers.d permissions file"
             touch /tmp/gs-nopasswd.sudo
             echo -e "${CURRENTUSER} ALL=(ALL) NOPASSWD: ALL" > /tmp/gs-nopasswd.sudo
             sudo install -m 0440 /tmp/gs-nopasswd.sudo /etc/sudoers.d/gs-nopasswd
-#        fi
+        fi
     fi
 
-#    if [ -f /etc/bash.bashrc ]; then
-#         echo -e "${STAT} Cleaning up bash.bashrc"
-#         sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
-#    fi
+    if [ -f /etc/bash.bashrc ]; then
+         echo -e "${STAT} Cleaning up bash.bashrc"
+         sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
+    fi
 
     echo -e "Get here?"
 
