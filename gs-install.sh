@@ -23,8 +23,14 @@ elif hash tdnf 2>/dev/null; then
     OS_INSTALL="tdnf install"
 elif hash yum 2>/dev/null; then
     OS_PKG="oldhat"
+    OS_INSTALL="yum update"
+    OS_INSTALL="yum install"
 elif hash apk 2>/dev/null; then
     OS_PKG="alpine"
+    OS_INSTALL="apk update"
+    OS_INSTALL="apk install"
+else
+    OS_PKG="unknown"
 fi
 
 # Script Colors
@@ -61,7 +67,7 @@ if [ ! "$EUID" -ne 0 ]; then
     LOCALADMIN="root"
 
     if ! hash sudo 2>/dev/null; then
-        if [ "${OS_PKG}" = "oldhat" ] || [ "${OS_PKG}" = "alpine" ]; then
+        if [ "${OS_PKG}" = "unknown" ]; then
             echo -e "${FAIL} Sudo utility not detected"
             CROSSCOUNT=$((CROSSCOUNT+1))
         else
@@ -96,16 +102,11 @@ else
 fi
 
 if [ "${LOCALADMIN}" == "nosudo" ]; then
-    echo -e "${FAIL} Sudo utility cannot be used by the current user"
-    echo -e "  You will need to manually compensate for this error"
-    echo -e "  Installation cannot continue at this time"
+    echo -e "${FAIL} Sudo utility cannot be used by the current user."
+    echo -e "  You will need to manually compensate for this error."
+    echo -e "  Installation cannot continue at this time."
     echo -e "${INFO} Exiting Gravity Sync Installer"
     exit
-fi
-
-if [ ! "${OS_PKG}" = "oldhat" ] || [ ! "${OS_PKG}" = "alpine" ]; then
-    echo -e "${INFO} Attempting Install of Required Components"
-    sudo ${OS_INSTALL} git rsync
 fi
 
 echo -e "${INFO} Validating Install of Required Components"
@@ -113,18 +114,40 @@ echo -e "${INFO} Validating Install of Required Components"
 if hash ssh 2>/dev/null; then
     echo -e "${GOOD} SSH has been detected"
 else
-    echo -e "${FAIL} SSH not detected on this system"
-    echo -e "${WARN} This is required to run commands to your remote Pi-hole"
-    CROSSCOUNT=$((CROSSCOUNT+1))
+    echo -e "${FAIL} OpenSSH cannot be detected on this system."
+    echo -e "  You will need to manually compensate for this error."
+    echo -e "  Installation cannot continue at this time."
+    echo -e "${INFO} Exiting Gravity Sync Installer"
+    exit
 fi
+
+# Check GIT
+if hash git 2>/dev/null; then
+    echo -e "${GOOD} GIT has been detected"
+else
+    if [ ! "${OS_PKG}" = "unknown" ]; then
+        echo -e "${INFO} Attempting Install of Git"
+        sudo ${OS_INSTALL} git
+    else
+        echo -e "${FAIL} GIT has not been detected"
+        echo -e "${WARN} This is required to download and update Gravity Sync"
+        CROSSCOUNT=$((CROSSCOUNT+1))
+    fi
+fi
+
 
 # Check Rsync
 if hash rsync 2>/dev/null; then
     echo -e "${GOOD} RSYNC has been detected"
 else
-    echo -e "${FAIL} RSYNC not detected on this system"
-    echo -e "${WARN} This is required to transfer data to/from your remote Pi-hole"
-    CROSSCOUNT=$((CROSSCOUNT+1))
+    if [ ! "${OS_PKG}" = "unknown" ]; then
+        echo -e "${INFO} Attempting Install of Rsync"
+        sudo ${OS_INSTALL} rsync
+    else
+        echo -e "${FAIL} RSYNC not detected on this system"
+        echo -e "${WARN} This is required to transfer data to/from your remote Pi-hole"
+        CROSSCOUNT=$((CROSSCOUNT+1))
+    fi
 fi
 
 if [ "$GS_DOCKER" != "1" ]; then
@@ -137,15 +160,6 @@ if [ "$GS_DOCKER" != "1" ]; then
         echo -e "${WARN} This is required to automate and monitor Pi-hole replication"
         CROSSCOUNT=$((CROSSCOUNT+1))
     fi
-fi
-
-# Check GIT
-if hash git 2>/dev/null; then
-    echo -e "${GOOD} GIT has been detected"
-else
-    echo -e "${FAIL} GIT has not been detected"
-    echo -e "${WARN} This is required to download and update Gravity Sync"
-    CROSSCOUNT=$((CROSSCOUNT+1))
 fi
 
 if [ "$GS_DOCKER" != "1" ]; then
