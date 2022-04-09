@@ -62,12 +62,12 @@ if [ ! "$EUID" -ne 0 ]; then
     LOCALADMIN="root"
 
     if ! hash sudo 2>/dev/null; then
-        if [ "${OS_PKG}" != "oldhat" ] || [ "${OS_PKG}" != "alpine" ]; then
-            echo -e "${INFO} Installing Sudo"
-            ${OS_INSTALL} sudo
-        else
+        if [ "${OS_PKG}" = "oldhat" ] || [ "${OS_PKG}" = "alpine" ]; then
             echo -e "${FAIL} Sudo utility not detected"
             CROSSCOUNT=$((CROSSCOUNT+1))
+        else
+            echo -e "${INFO} Installing Sudo"
+            ${OS_INSTALL} sudo
         fi
     else
         echo -e "${GOOD} Sudo utility detected"
@@ -96,7 +96,7 @@ else
      fi
 fi
 
-if [ "${LOCALADMIN}" == "nosudo" ]
+if [ "${LOCALADMIN}" == "nosudo" ]; then
     echo -e "${FAIL} Sudo utility cannot be used by the current user"
     echo -e "  You will need to manually compensate for this error"
     echo -e "  Installation cannot continue at this time"
@@ -104,9 +104,9 @@ if [ "${LOCALADMIN}" == "nosudo" ]
     exit
 fi
 
-if [ "${OS_PKG}" != "oldhat" ] || [ "${OS_PKG}" != "alpine" ]; then
+if [ ! "${OS_PKG}" = "oldhat" ] || [ ! "${OS_PKG}" = "alpine" ]; then
     echo -e "${INFO} Attempting Install of Required Components"
-    sudo ${OS_INSTALL} git rsync ssh
+    sudo "${OS_INSTALL}" git rsync ssh
 fi
 
 echo -e "${INFO} Validating Install of Required Components"
@@ -155,8 +155,7 @@ fi
 if [ "$GS_DOCKER" != "1" ]; then
     echo -e "${INFO} Performing Warp Core Diagnostics"
     # Check Pihole
-    if hash pihole 2>/dev/null
-    then
+    if hash pihole 2>/dev/null; then
         echo -e "${GOOD} Local installation of Pi-hole has been detected"
     else
         if hash docker 2>/dev/null
@@ -170,9 +169,7 @@ if [ "$GS_DOCKER" != "1" ]; then
                     echo -e "${WARN} There is no Docker container of Pi-hole running"
                     PHFAILCOUNT=$((PHFAILCOUNT+1))
                 fi
-            fi
-        elif hash podman 2>/dev/null
-        then
+        elif hash podman 2>/dev/null; then
             echo -e "${GOOD} Podman installation has been detected"
             FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
                 if [ "$FTLCHECK" != "" ]
@@ -182,7 +179,6 @@ if [ "$GS_DOCKER" != "1" ]; then
                     echo -e "${WARN} There is no Podman container of Pi-hole running"
                     PHFAILCOUNT=$((PHFAILCOUNT+1))
                 fi
-            fi
         else
             echo -e "${FAIL} No local Pi-hole install detected"
             PHFAILCOUNT=$((PHFAILCOUNT+1))
