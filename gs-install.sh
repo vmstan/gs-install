@@ -219,6 +219,10 @@ else
         echo -e "${INFO} Gravity Sync Preperation Complete"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
+            if [ -f /etc/bash.bashrc]; then
+                sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
+            fi
+            
             if [ -d /etc/gravity-sync/.gs ]; then
                 sudo rm -fr /etc/gravity-sync/.gs
             fi
