@@ -206,6 +206,7 @@ else
     fi
 
     if [ -f /etc/bash.bashrc ]; then
+        echo -e "${STAT} Cleaning up bash.bashrc"
         sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
     fi
 
