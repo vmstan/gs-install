@@ -210,6 +210,18 @@ else
         echo -e "${CURRENTUSER} ALL=(ALL) NOPASSWD: ALL" > /tmp/gs-nopasswd.sudo
         sudo install -m 0440 /tmp/gs-nopasswd.sudo /etc/sudoers.d/gs-nopasswd
     fi
+
+    if [ -f /etc/bash.bashrc ]; then
+        sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
+    fi
+
+    GS_ALIAS_DETECT=$(alias | gravity-sync.sh)
+    if [ "${GS_ALIAS_DETECT}" != "" ]; then
+        echo -e "${WARN} Bash alias for a previous version of Gravity Sync was detected."
+        echo -e "  You may need to manually remove this from your system and/or log out of"
+        echo -e "  this session before your new Gravity Sync installation will function"
+        echo -e "  as expected."
+    fi
     
     if [ "$GS" == "prep" ]
     then
@@ -219,10 +231,6 @@ else
         echo -e "${INFO} Gravity Sync Preperation Complete"
     else
         echo -e "${STAT} Creating Gravity Sync Directories"
-            if [ -f /etc/bash.bashrc ]; then
-                sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
-            fi
-            
             if [ -d /etc/gravity-sync/.gs ]; then
                 sudo rm -fr /etc/gravity-sync/.gs
             fi
