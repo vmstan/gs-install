@@ -58,10 +58,11 @@ CROSSCOUNT="0"
 PHFAILCOUNT="0"
 CURRENTUSER=$(whoami)
 
+
 # Header
 echo -e "${LOGO} ${BOLD}Gravity Sync Installation Script${NC}"
-
 echo -e "${INFO} Validating User Permissions"
+
 if [ ! "$EUID" -ne 0 ]; then
     echo -e "${GOOD} ${CURRENTUSER} is root"
     LOCALADMIN="root"
@@ -80,6 +81,7 @@ if [ ! "$EUID" -ne 0 ]; then
 else
     if hash sudo 2>/dev/null; then
         echo -e "${GOOD} Sudo utility detected"
+        
         if ! sudo --validate; then
             echo -e "${FAIL} ${CURRENTUSER} cannot use sudo"
             CROSSCOUNT=$((CROSSCOUNT+1))
