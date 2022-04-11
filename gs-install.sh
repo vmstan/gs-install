@@ -16,19 +16,19 @@ if hash apt-get 2>/dev/null; then
 elif hash dnf 2>/dev/null; then
     OS_PKG="redhat"
     OS_UPDATE="dnf check-update"
-    OS_INSTALL="dnf install"
+    OS_INSTALL="dnf install -y"
 elif hash tdnf 2>/dev/null; then
     OS_PKG="photon"
-    OS_INSTALL="tdnf update"
-    OS_INSTALL="tdnf install"
-elif hash yum 2>/dev/null; then
-    OS_PKG="oldhat"
-    OS_INSTALL="yum update"
-    OS_INSTALL="yum install"
-elif hash apk 2>/dev/null; then
-    OS_PKG="alpine"
-    OS_INSTALL="apk update"
-    OS_INSTALL="apk install"
+    OS_UPDATE="tdnf update"
+    OS_INSTALL="tdnf install -y"
+#elif hash yum 2>/dev/null; then
+#    OS_PKG="oldhat"
+#    OS_UPDATE="yum update"
+#    OS_INSTALL="yum install -y"
+#elif hash apk 2>/dev/null; then
+#    OS_PKG="alpine"
+#    OS_UPDATE="apk update"
+#    OS_INSTALL="apk add"
 else
     OS_PKG="unknown"
 fi
