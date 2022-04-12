@@ -226,6 +226,7 @@ else
     if [ -f /etc/bash.bashrc ]; then
          echo -e "${STAT} Cleaning up bash.bashrc"
          sudo sed -i "/gravity-sync.sh/d" /etc/bash.bashrc
+         echo -e "  You may need to exit your terminal or reboot before running 'gravity-sync' commands"
     fi
 
    # echo -e "Get here?"
@@ -274,7 +275,7 @@ else
             echo -e "${STAT} Starting Gravity Sync Configuration"
 
         if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
-            gravity-sync configure <&1
+            /usr/bin/gravity-sync configure <&1
         else
             echo -e "${WARN} Existing gravity-sync.conf has been detected"
             echo -e "  Execute ${YELLOW}gravity-sync config${NC} to replace it"
