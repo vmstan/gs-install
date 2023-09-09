@@ -275,7 +275,7 @@ else
             echo -e "${STAT} Starting Gravity Sync Configuration"
 
         if [ ! -f /etc/gravity-sync/gravity-sync.conf ]; then 
-            /usr/local/bin/gravity-sync configure <&1
+            /usr/local/bin/gravity-sync configure $1 <&1
         else
             echo -e "${WARN} Existing gravity-sync.conf has been detected"
             echo -e "  Execute ${YELLOW}gravity-sync config${NC} to replace it"
