@@ -55,7 +55,7 @@ LOGO="${PURPLE}∞${NC}"
 
 # Variables
 CROSSCOUNT="0"
-PHFAILCOUNT="0"
+PHFOUND="0"
 CURRENTUSER=$(whoami)
 
 
@@ -176,28 +176,28 @@ if [ "$GS_DOCKER" != "1" ]; then
                 if [ "$FTLCHECK" != "" ]
                 then
                     echo -e "${GOOD} Docker container of Pi-hole has been detected"
+		    PHFOUND=$((PHFOUND+1))
                 else
                     echo -e "${WARN} There is no Docker container of Pi-hole running"
-                    PHFAILCOUNT=$((PHFAILCOUNT+1))
                 fi
-        elif hash podman 2>/dev/null; then
+	fi
+	if [ "$PHFOUND" == 0 ] && hash podman 2>/dev/null; then
             echo -e "${GOOD} Podman installation has been detected"
             FTLCHECK=$(sudo podman container ls | grep 'pihole/pihole')
                 if [ "$FTLCHECK" != "" ]
                 then
                     echo -e "${GOOD} Podman container of Pi-hole has been detected"
+		    PHFOUND=$((PHFOUND+1))
                 else
                     echo -e "${WARN} There is no Podman container of Pi-hole running"
-                    PHFAILCOUNT=$((PHFAILCOUNT+1))
                 fi
         else
             echo -e "${FAIL} No local Pi-hole install detected"
-            PHFAILCOUNT=$((PHFAILCOUNT+1))
         fi
     fi
 
 
-    if [ "$PHFAILCOUNT" != "0" ]
+    if [ "$PHFOUND" == "0" ]
     then
         echo -e "${FAIL} Pi-hole was not found on this system"
         CROSSCOUNT=$((CROSSCOUNT+1))
